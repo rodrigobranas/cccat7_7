@@ -1,7 +1,7 @@
-import Coupon from "../src/Coupon";
-import Dimension from "../src/Dimension";
-import Item from "../src/Item";
-import Order from "../src/Order";
+import Coupon from "../../src/domain/entities/Coupon";
+import Dimension from "../../src/domain/entities/Dimension";
+import Item from "../../src/domain/entities/Item";
+import Order from "../../src/domain/entities/Order";
 
 test("Deve criar um pedido vazio", function () {
 	const order = new Order("886.634.854-68");
@@ -60,4 +60,13 @@ test("Deve criar um pedido com 3 itens e calcular o frete", function () {
 	order.addItem(new Item(3, "Cabo", 30, new Dimension(10, 10, 10, 1)), 3);
 	const total = order.getTotal();
 	expect(total).toBe(6350);
+});
+
+test("Deve criar um pedido e gerar o código", function () {
+	const order = new Order("886.634.854-68", new Date("2022-03-01T10:00:00"), 1);
+	order.addItem(new Item(1, "Guitarra", 1000), 1);
+	order.addItem(new Item(2, "Amplificador", 5000), 1);
+	order.addItem(new Item(3, "Cabo", 30), 3);
+	const code = order.getCode();
+	expect(code).toBe("202200000001");
 });

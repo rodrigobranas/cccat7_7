@@ -1,4 +1,4 @@
-import Dimension from "../src/Dimension"
+import Dimension from "../../src/domain/entities/Dimension"
 
 test("Não deve ter largura negativa", function () {
 	expect(() => new Dimension(-1, 0, 0, 0)).toThrow(new Error("Invalid dimension"));

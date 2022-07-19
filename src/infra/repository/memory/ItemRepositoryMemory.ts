@@ -1,6 +1,6 @@
-import Dimension from "./Dimension";
-import Item from "./Item";
-import ItemRepository from "./ItemRepository";
+import Dimension from "../../../domain/entities/Dimension";
+import Item from "../../../domain/entities/Item";
+import ItemRepository from "../../../domain/repository/ItemRepository";
 
 export default class ItemRepositoryMemory implements ItemRepository {
 	items: Item[];
