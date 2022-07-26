@@ -1,0 +1,18 @@
+{
+  "name": "cccat7_1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^28.1.4",
+    "axios": "^0.27.2",
+    "express": "^4.18.1",
+    "jest": "^28.1.2",
+    "nodemon": "^2.0.19",
+    "pg-promise": "^10.11.1",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  }
+}
