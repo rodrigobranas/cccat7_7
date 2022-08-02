@@ -11,6 +11,6 @@ test("Deve testar o CLI", async function () {
 	await cliManager.execute("cpf 886.634.854-68");
 	await cliManager.execute("add-item 1 1");
 	const output = await cliManager.execute("preview");
-	expect(output).toBe("total: 1030");
+	expect(output).toBe("total: 1000");
 	await connection.close();
 });

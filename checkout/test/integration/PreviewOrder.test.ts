@@ -15,6 +15,6 @@ test("Deve simular um pedido", async function () {
 			{ idItem: 3, quantity: 3 }
 		]
 	});
-	expect(output.total).toBe(6350);
+	expect(output.total).toBe(6090);
 	await connection.close();
 });

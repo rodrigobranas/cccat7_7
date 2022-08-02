@@ -1,6 +1,5 @@
 import Coupon from "./Coupon";
 import Cpf from "./Cpf";
-import FreightCalculator from "./FreightCalculator";
 import Item from "./Item";
 import OrderCode from "./OrderCode";
 import OrderCoupon from "./OrderCoupon";
@@ -22,7 +21,6 @@ export default class Order {
 	addItem (item: Item, quantity: number) {
 		if (this.orderItems.some(orderItem => orderItem.idItem === item.idItem)) throw new Error("Duplicated item");
 		this.orderItems.push(item.createOrderItem(quantity));
-		this.freight += FreightCalculator.calculate(item) * quantity;
 	}
 
 	addCoupon (coupon: Coupon) {
