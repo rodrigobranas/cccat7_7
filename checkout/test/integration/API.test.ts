@@ -14,5 +14,5 @@ test.skip("Deve simular uma compra", async function () {
 		}
 	});
 	const output = response.data;
-	expect(output.total).toBe(6350);
+	expect(output.total).toBe(6090);
 });

@@ -1,5 +1,4 @@
 import Coupon from "../../src/domain/entities/Coupon";
-import Dimension from "../../src/domain/entities/Dimension";
 import Item from "../../src/domain/entities/Item";
 import Order from "../../src/domain/entities/Order";
 

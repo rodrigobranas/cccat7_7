@@ -1,12 +1,11 @@
 import CLIManager from "../../cli/CLIManager";
 import Connection from "../../database/Connection";
-import ItemRepositoryDatabase from "../../repository/database/ItemRepositoryDatabase";
 import PgPromiseAdapter from "../../database/PgPromiseAdapter";
 import PreviewOrder from "../../../application/PreviewOrder";
 // Interface Adapter
 export default class CLIController {
 
-	constructor (cliManager: CLIManager, readonly connection: Connection) {
+	constructor (cliManager: CLIManager, readonly previewOrder: PreviewOrder) {
 		let cpf: string = "";
 		let orderItems: { idItem: number, quantity: number }[] = [];
 
@@ -20,8 +19,6 @@ export default class CLIController {
 		});
 
 		cliManager.addCommand("preview", async function () {
-			const itemRepository = new ItemRepositoryDatabase(connection);
-			const previewOrder = new PreviewOrder(itemRepository);
 			const input = { cpf, orderItems };
 			const output = await previewOrder.execute(input);
 			return `total: ${output.total}`;

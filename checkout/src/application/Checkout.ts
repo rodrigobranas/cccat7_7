@@ -1,16 +1,19 @@
 import Order from "../domain/entities/Order";
-import ItemRepository from "../domain/repository/ItemRepository";
+import OrderPlaced from "../domain/event/OrderPlaced";
 import OrderRepository from "../domain/repository/OrderRepository";
+import Queue from "../infra/queue/Queue";
 import CalculateFreightGateway from "./gateway/CalculateFreightGateway";
 import DecrementStockGateway from "./gateway/DecrementStockGateway";
-// use case
+import GetItemGateway from "./gateway/GetItemGateway";
+
 export default class Checkout {
 
 	constructor (
-		readonly itemRepository: ItemRepository, 
 		readonly orderRepository: OrderRepository, 
 		readonly calculateFreightGateway: CalculateFreightGateway,
-		readonly decrementStockGateway: DecrementStockGateway
+		readonly decrementStockGateway: DecrementStockGateway,
+		readonly getItemGateway: GetItemGateway,
+		readonly queue: Queue
 	) {
 	}
 
@@ -20,15 +23,16 @@ export default class Checkout {
 		const orderItemsFreight = [];
 		const orderItemsStock = [];
 		for (const orderItem of input.orderItems) {
-			const item = await this.itemRepository.getItem(orderItem.idItem);
+			const item = await this.getItemGateway.execute(orderItem.idItem);
 			order.addItem(item, orderItem.quantity);
-			orderItemsFreight.push({ volume: item.getVolume(), density: item.getDensity(), quantity: orderItem.quantity });
+			orderItemsFreight.push({ volume: item.volume, density: item.density, quantity: orderItem.quantity });
 			orderItemsStock.push({ idItem: orderItem.idItem, quantity: orderItem.quantity });
 		}
 		const freight = await this.calculateFreightGateway.calculate({ from: input.from, to: input.to, orderItems: orderItemsFreight });
 		order.freight = freight.total;
 		await this.orderRepository.save(order);
-		await this.decrementStockGateway.decrement(orderItemsStock);
+		// await this.decrementStockGateway.decrement(orderItemsStock);
+		await this.queue.publish(new OrderPlaced(order.getCode(), orderItemsStock));
 		const total = order.getTotal();
 		return {
 			code: order.getCode(),

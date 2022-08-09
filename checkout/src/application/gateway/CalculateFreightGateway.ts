@@ -6,8 +6,8 @@ export type Input = {
 	from: string,
 	to: string,
 	orderItems: {
-		volume: number,
-		density: number,
+		volume?: number,
+		density?: number,
 		quantity: number
 	}[]
 }

@@ -1,15 +1,17 @@
-import Connection from "../../database/Connection";
 import Http from "../../http/Http";
-import ItemRepositoryDatabase from "../../repository/database/ItemRepositoryDatabase";
 import PreviewOrder from "../../../application/PreviewOrder";
-// Interface Adapter
+import Checkout2 from "../../../application/Checkout2";
+
 export default class OrderController {
 
-	constructor (readonly http: Http, readonly connection: Connection) {
+	constructor (readonly http: Http, readonly previewOrder: PreviewOrder, readonly checkout: Checkout2) {
 		http.on("post", "/orderPreview", function (params: any, body: any) {
-			const itemRepository = new ItemRepositoryDatabase(connection);
-			const previewOrder = new PreviewOrder(itemRepository);
 			const output = previewOrder.execute(body);
+			return output;
+		});
+
+		http.on("post", "/checkout", function (params: any, body: any) {
+			const output = checkout.execute(body);
 			return output;
 		});
 	}
