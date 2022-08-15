@@ -20,6 +20,7 @@ export default class CheckoutHandler {
 	async execute (input: Input): Promise<void> {
 		const sequence = await this.orderRepository.count() + 1;
 		const order = new Order(input.cpf, input.date, sequence);
+		order.guid = input.guid;
 		const orderItemsFreight = [];
 		const orderItemsStock = [];
 		for (const orderItem of input.orderItems) {
@@ -36,6 +37,7 @@ export default class CheckoutHandler {
 }
 
 type Input = {
+	guid?: string,
 	from: string,
 	to: string,
 	cpf: string,

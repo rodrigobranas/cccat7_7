@@ -5,4 +5,5 @@ export default interface OrderRepository {
 	count (): Promise<number>;
 	clean (): Promise<void>;
 	get (code: string): Promise<Order>;
+	getByGuid (guid: string): Promise<Order>;
 }

@@ -7,6 +7,7 @@ import DomainEvent from "../../src/domain/event/DomainEvent";
 import PgPromiseAdapter from "../../src/infra/database/PgPromiseAdapter";
 import Queue from "../../src/infra/queue/Queue";
 import OrderRepositoryDatabase from "../../src/infra/repository/database/OrderRepositoryDatabase";
+import GetOrder1 from "../../src/application/GetOrder1";
 
 test("Deve fazer um pedido", async function () {
 	const queue: Queue = {
@@ -43,8 +44,10 @@ test("Deve fazer um pedido", async function () {
 			return items[idItem];
 		}
 	}
+	const guid = (Math.random() + 1).toString(36).substring(7);
 	const checkout = new CheckoutHandler(orderRepository, calculateFreightGateway, decrementStockGateway, getItemGateway, queue);
 	await checkout.execute({
+		guid,
 		from: "22060030",
 		to: "88015600",
 		cpf: "886.634.854-68",
@@ -55,8 +58,8 @@ test("Deve fazer um pedido", async function () {
 		],
 		date: new Date("2022-03-01T10:00:00")
 	});
-	// getOrder
-	// expect(output.total).toBe(6292.09);
-	// expect(output.code).toBe("202200000001");
+	const getOrder = new GetOrder1(orderRepository, getItemGateway);
+	const output = await getOrder.execute({ guid });
+	expect(output.total).toBe(6292.09);
 	await connection.close();
 });

@@ -1,4 +1,4 @@
-import CheckoutCommand from "../domain/event/CheckoutCommand";
+import CheckoutCommand from "../domain/command/CheckoutCommand";
 import Queue from "../infra/queue/Queue";
 
 export default class Checkout {
@@ -14,6 +14,7 @@ export default class Checkout {
 }
 
 type Input = {
+	guid?: string,
 	from: string,
 	to: string,
 	cpf: string,

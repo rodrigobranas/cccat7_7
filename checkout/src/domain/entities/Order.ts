@@ -11,6 +11,7 @@ export default class Order {
 	coupon?: OrderCoupon;
 	freight = 0;
 	private code: OrderCode;
+	guid?: string;
 
 	constructor (cpf: string, readonly date: Date = new Date(), readonly sequence: number = 1) {
 		this.cpf = new Cpf(cpf);
