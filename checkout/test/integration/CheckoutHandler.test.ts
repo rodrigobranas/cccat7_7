@@ -1,21 +1,27 @@
-import Checkout from "../../src/application/Checkout";
+import CheckoutHandler from "../../src/application/handler/CheckoutHandler";
 import * as CalculateFreightGateway from "../../src/application/gateway/CalculateFreightGateway";
 import * as DecrementStockGateway from "../../src/application/gateway/DecrementStockGateway";
 import GetItemGateway from "../../src/application/gateway/GetItemGateway";
 import Item from "../../src/domain/entities/Item";
+import DomainEvent from "../../src/domain/event/DomainEvent";
 import PgPromiseAdapter from "../../src/infra/database/PgPromiseAdapter";
-import CalculateFreightHttpGateway from "../../src/infra/gateway/CalculateFreightHttpGateway";
-import GetItemHttpGateway from "../../src/infra/gateway/GetItemHttpGateway";
-import RabbitMQAdapter from "../../src/infra/queue/RabbitMQAdapter";
+import Queue from "../../src/infra/queue/Queue";
 import OrderRepositoryDatabase from "../../src/infra/repository/database/OrderRepositoryDatabase";
 
 test("Deve fazer um pedido", async function () {
-	const queue = new RabbitMQAdapter();
-	await queue.connect();
+	const queue: Queue = {
+		async connect (): Promise<void> {
+		},
+		async close (): Promise<void> {
+		},
+		async consume (eventName: string, callback: Function): Promise<void> {
+		},
+		async publish (domainEvent: DomainEvent): Promise<void> {
+		}
+	}
 	const connection = new PgPromiseAdapter();
 	const orderRepository = new OrderRepositoryDatabase(connection);
 	await orderRepository.clean();
-	// const calculateFreightGateway = new CalculateFreightHttpGateway();
 	const calculateFreightGateway: CalculateFreightGateway.default = { 
 		async calculate(input: CalculateFreightGateway.Input) {
 			return {
@@ -27,7 +33,6 @@ test("Deve fazer um pedido", async function () {
 		async decrement (input: DecrementStockGateway.Input): Promise<void> {
 		}
 	};
-	// const getItemGateway = new GetItemHttpGateway();
 	const getItemGateway: GetItemGateway = {
 		async execute (idItem: number): Promise<Item> {
 			const items: any = {
@@ -38,8 +43,8 @@ test("Deve fazer um pedido", async function () {
 			return items[idItem];
 		}
 	}
-	const checkout = new Checkout(orderRepository, calculateFreightGateway, decrementStockGateway, getItemGateway, queue);
-	const output = await checkout.execute({
+	const checkout = new CheckoutHandler(orderRepository, calculateFreightGateway, decrementStockGateway, getItemGateway, queue);
+	await checkout.execute({
 		from: "22060030",
 		to: "88015600",
 		cpf: "886.634.854-68",
@@ -50,7 +55,8 @@ test("Deve fazer um pedido", async function () {
 		],
 		date: new Date("2022-03-01T10:00:00")
 	});
-	expect(output.total).toBe(6292.09);
-	expect(output.code).toBe("202200000001");
+	// getOrder
+	// expect(output.total).toBe(6292.09);
+	// expect(output.code).toBe("202200000001");
 	await connection.close();
 });

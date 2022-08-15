@@ -17,7 +17,7 @@ export default class CheckoutHandler {
 	) {
 	}
 
-	async execute (input: Input): Promise<Output> {
+	async execute (input: Input): Promise<void> {
 		const sequence = await this.orderRepository.count() + 1;
 		const order = new Order(input.cpf, input.date, sequence);
 		const orderItemsFreight = [];
@@ -31,13 +31,7 @@ export default class CheckoutHandler {
 		const freight = await this.calculateFreightGateway.calculate({ from: input.from, to: input.to, orderItems: orderItemsFreight });
 		order.freight = freight.total;
 		await this.orderRepository.save(order);
-		// await this.decrementStockGateway.decrement(orderItemsStock);
 		await this.queue.publish(new OrderPlaced(order.getCode(), orderItemsStock));
-		const total = order.getTotal();
-		return {
-			code: order.getCode(),
-			total
-		};
 	}
 }
 
@@ -47,9 +41,4 @@ type Input = {
 	cpf: string,
 	date: Date,
 	orderItems: { idItem: number, quantity: number }[]
-}
-
-type Output = {
-	code: string,
-	total: number
 }

@@ -8,7 +8,7 @@ import PgPromiseAdapter from "./infra/database/PgPromiseAdapter";
 import CalculateFreightHttpGateway from "./infra/gateway/CalculateFreightHttpGateway";
 import RabbitMQAdapter from "./infra/queue/RabbitMQAdapter";
 import * as DecrementStockGateway from "./application/gateway/DecrementStockGateway";
-import Checkout2 from "./application/Checkout2";
+import Checkout from "./application/Checkout";
 import CheckoutQueue from "./infra/queue/CheckoutQueue";
 
 async function init () {
@@ -22,7 +22,7 @@ async function init () {
 		}
 	};
 	const checkoutHandler = new CheckoutHandler(new OrderRepositoryDatabase(new PgPromiseAdapter()), new CalculateFreightHttpGateway(), decrementStockGateway, new GetItemHttpGateway(), queue);
-	const checkout = new Checkout2(queue);
+	const checkout = new Checkout(queue);
 	new OrderController(http, previewOrder, checkout);
 	new CheckoutQueue(queue, checkoutHandler)
 	http.listen(3000);
