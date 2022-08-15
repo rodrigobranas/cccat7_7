@@ -1,6 +1,6 @@
 import axios from "axios";
 
-test("Deve calcular o frete", async function () {
+test.skip("Deve calcular o frete", async function () {
 	const response = await axios({
 		url: "http://localhost:3002/calculateFreight",
 		method: "post",

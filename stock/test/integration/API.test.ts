@@ -3,7 +3,7 @@ import axios from "axios";
 import PgPromiseAdapter from "../../src/infra/database/PgPromiseAdapter";
 import StockEntryRepositoryDatabase from "../../src/infra/repository/StockEntryRepositoryDatabase";
 
-test("Deve calcular o frete", async function () {
+test.skip("Deve calcular o frete", async function () {
 	const connection = new PgPromiseAdapter();
 	const stockEntryRepository = new StockEntryRepositoryDatabase(connection);
 	await stockEntryRepository.clean();
