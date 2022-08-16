@@ -1,32 +1,17 @@
-import OrderProjectionDAO from "../../infra/dao/OrderProjectionDAO";
+import OrderQuery from "../../infra/query/OrderQuery";
 import GetItemGateway from "../gateway/GetItemGateway";
 
 export default class OrderProjectionHandler {
 
-	constructor (
-		readonly orderProjectionDAO: OrderProjectionDAO,
-		readonly getItemGateway: GetItemGateway
-	) {
+	constructor (readonly orderQuery: OrderQuery, readonly getItemGateway: GetItemGateway) {
 	}
 
-	async execute (input: Input): Promise<void> {
-		const orderProjection: any = {
-			orderItems: []
-		};
-		for (const orderItem of input.orderItems) {
-			const item = await this.getItemGateway.execute(orderItem.idItem);
-			orderProjection.orderItems.push({ idItem: orderItem.idItem, description: item.description, price: item.price, quantity: orderItem.quantity });
+	async execute (input: { guid: string }): Promise<any> {
+		const order = await this.orderQuery.getByGuid2(input.guid);
+		for (const orderItem of order.orderItems) {
+			const item = await this.getItemGateway.execute(orderItem.id_item);
+			orderItem.description = item.description;
 		}
-		if (input.guid) await this.orderProjectionDAO.save(input.guid, orderProjection);
+		await this.orderQuery.saveOrderProjection(input.guid, order);
 	}
-}
-
-type Input = {
-	code?: string,
-	guid?: string,
-	from: string,
-	to: string,
-	cpf: string,
-	date: Date,
-	orderItems: { idItem: number, quantity: number }[]
 }

@@ -7,7 +7,11 @@ import DomainEvent from "../../src/domain/event/DomainEvent";
 import PgPromiseAdapter from "../../src/infra/database/PgPromiseAdapter";
 import Queue from "../../src/infra/queue/Queue";
 import OrderRepositoryDatabase from "../../src/infra/repository/database/OrderRepositoryDatabase";
-import GetOrder1 from "../../src/application/GetOrder1";
+import GetOrder from "../../src/application/GetOrder";
+import OrderQuery from "../../src/infra/query/OrderQuery";
+import GetOrder2 from "../../src/application/GetOrder2";
+import OrderProjectionHandler from "../../src/application/handler/OrderProjectionHandler";
+import GetOrder3 from "../../src/application/GetOrder3";
 
 test("Deve fazer um pedido", async function () {
 	const queue: Queue = {
@@ -58,8 +62,18 @@ test("Deve fazer um pedido", async function () {
 		],
 		date: new Date("2022-03-01T10:00:00")
 	});
-	const getOrder = new GetOrder1(orderRepository, getItemGateway);
-	const output = await getOrder.execute({ guid });
-	expect(output.total).toBe(6292.09);
+	// API Composition - acoplamento
+	// const getOrder = new GetOrder(orderRepository, getItemGateway);
+	// const output = await getOrder.execute(guid);
+	// Query - acoplamento
+	const orderQuery = new OrderQuery(connection);
+	// const getOrder2 = new GetOrder2(orderQuery);
+	// const output = await getOrder2.execute(guid);
+	// expect(output.total).toBe('6292.09')
+	const orderProjectionHandler = new OrderProjectionHandler(orderQuery, getItemGateway);
+	await orderProjectionHandler.execute({ guid });
+	const getOrder3 = new GetOrder3(orderQuery);
+	const output = await getOrder3.execute(guid);
+	console.log(output.data.orderItems);
 	await connection.close();
 });

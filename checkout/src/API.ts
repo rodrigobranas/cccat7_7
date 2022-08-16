@@ -10,8 +10,8 @@ import RabbitMQAdapter from "./infra/queue/RabbitMQAdapter";
 import * as DecrementStockGateway from "./application/gateway/DecrementStockGateway";
 import Checkout from "./application/Checkout";
 import CheckoutQueue from "./infra/queue/CheckoutQueue";
+import OrderQuery from "./infra/query/OrderQuery";
 import OrderProjectionHandler from "./application/handler/OrderProjectionHandler";
-import OrderProjectionDAO from "./infra/dao/OrderProjectionDAO";
 
 async function init () {
 	const http = new ExpressAdapter();
@@ -24,9 +24,11 @@ async function init () {
 		}
 	};
 	const connection = new PgPromiseAdapter();
-	const checkoutHandler = new CheckoutHandler(new OrderRepositoryDatabase(connection), new CalculateFreightHttpGateway(), decrementStockGateway, getItemGateway, queue);
-	const orderProjectionHandler = new OrderProjectionHandler(new OrderProjectionDAO(connection), getItemGateway);
+	const orderRepository = new OrderRepositoryDatabase(connection)
+	const checkoutHandler = new CheckoutHandler(orderRepository, new CalculateFreightHttpGateway(), decrementStockGateway, getItemGateway, queue);
 	const checkout = new Checkout(queue);
+	const orderQuery = new OrderQuery(connection);
+	const orderProjectionHandler = new OrderProjectionHandler(orderQuery, getItemGateway);
 	new OrderController(http, previewOrder, checkout);
 	new CheckoutQueue(queue, checkoutHandler, orderProjectionHandler);
 	http.listen(3000);

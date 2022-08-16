@@ -10,6 +10,7 @@ export default class StockQueue {
 			if (!input.input) return;
 			input.input.date = new Date(input.input.date); 
 			await checkoutHandler.execute(input.input);
+			// outro lugar consumindo este evento
 			await orderProjectionHandler.execute(input.input);
 		});
 	}
